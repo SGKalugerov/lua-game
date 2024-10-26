@@ -1,30 +1,39 @@
--- Load the player script
 require("scripts.player")
-
--- Game State Variables
+require("animationManager.animationManager")
 local player
 local background
-
--- Load assets and initialize variables
+local animationManager
+local screenWidth = love.graphics.getWidth()
+local screenHeight = love.graphics.getHeight()
 function love.load()
     background = love.graphics.newImage("assets/background.jpg")
-    player = Player.new(50, 50, "assets/player.png") -- Initialize player at the center of the screen
+    animationManager = AnimationManager.new()
+    player = Player.new(0,0, animationManager)
 end
 
--- Update the game logic (runs every frame)
 function love.update(dt)
     player:update(dt)
+  
+    for i = #player.projectiles, 1, -1 do
+        local projectile = player.projectiles[i]
+        projectile:update(dt)
+
+        if projectile.x < 0 or projectile.x > screenWidth or projectile.y < 0 or projectile.y > screenHeight then
+            table.remove(player.projectiles, i) 
+        end
+    end
 end
 
--- Draw everything to the screen (runs every frame)
 function love.draw()
     love.graphics.draw(background, 0, 0)
     player:draw()
+    for _, projectile in ipairs(player.projectiles) do
+        projectile:draw()
+    end
 end
 
--- Key press event
 function love.keypressed(key)
     if key == "escape" then
-        love.event.quit() -- Quit the game on pressing escape
+        love.event.quit() 
     end
 end
