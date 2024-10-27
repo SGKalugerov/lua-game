@@ -8,10 +8,10 @@ local playerStates = require("utils.state")
 function Player.new(x, y, animationManager)
     local instance = setmetatable({}, Player)
     instance.speed = 300
-    instance.jumpHeight = -500 
-    instance.gravity = 1000 
+    instance.jumpHeight = -500
+    instance.gravity = 1000
     instance.verticalVelocity = 0
-    instance.isOnGround = true 
+    instance.isOnGround = true
     instance.animationManager = animationManager
     instance.speed = 350
     instance.state = playerStates["Idle"]
@@ -23,7 +23,7 @@ function Player.new(x, y, animationManager)
     instance.offsetY = 0
     instance.projectiles = {}
     instance.shootCooldown = 1 / 5
-    instance.shootTimer = 0   
+    instance.shootTimer = 0
 
     instance.currentFrames = instance.animationManager:getFrames(instance.state, instance.facing) or {}
 
@@ -50,13 +50,12 @@ function Player:jump()
 end
 
 function Player:update(dt)
-    local moving = false
     local newFrames = nil
-    if love.keyboard.isDown("left") then
-        if love.keyboard.isDown("up") then
+    if love.keyboard.isDown("a") then
+        if love.keyboard.isDown("w") then
             self.facing = facingTable["UpLeft"]
             self.shootingDirection = facingTable["UpLeft"]
-        elseif love.keyboard.isDown("down") then
+        elseif love.keyboard.isDown("s") then
             self.facing = facingTable["DownLeft"]
             self.shootingDirection = facingTable["DownLeft"]
         else
@@ -64,13 +63,12 @@ function Player:update(dt)
             self.shootingDirection = facingTable["Left"]
         end
         self.state = playerStates["Running"]
-        moving = true
         self.x = math.max(0, self.x - self.speed * dt)
-    elseif love.keyboard.isDown("right") then
-        if love.keyboard.isDown("up") then
+    elseif love.keyboard.isDown("d") then
+        if love.keyboard.isDown("w") then
             self.shootingDirection = facingTable["UpRight"]
             self.facing = facingTable["UpRight"]
-        elseif love.keyboard.isDown("down") then
+        elseif love.keyboard.isDown("s") then
             self.facing = facingTable["DownRight"]
             self.shootingDirection = facingTable["DownRight"]
         else
@@ -78,30 +76,35 @@ function Player:update(dt)
             self.shootingDirection = facingTable["Right"]
         end
         self.state = playerStates["Running"]
-        moving = true
         self.x = math.min(screenWidth - self.width, self.x + self.speed * dt)
-    elseif love.keyboard.isDown("up") then
+    elseif love.keyboard.isDown("w") then
         self.shootingDirection = facingTable["Up"]
+        self.state = playerStates["Idle"]
+
         if self.facing == facingTable["Left"] then
             self.facing = facingTable["UpLeft"]
         elseif self.facing == facingTable["Right"] then
             self.facing = facingTable["UpRight"]
         end
-    elseif love.keyboard.isDown('down') then
-        self.shootingDirection = facingTable["Down"]
-        -- if self.state ~= playerStates["Running"] and self.state ~= playerStates["Jumping"] then
-        --     self.state = playerStates["Crouching"]
-        -- end
-        if self.facing == facingTable["Left"] then
-            self.facing = facingTable["DownLeft"]
-        elseif self.facing == facingTable["Right"] then
-            self.facing = facingTable["DownRight"]
-        end
-        if self.state ~= playerStates["Running"] and self.state ~= playerStates["Jumping"] then
+    elseif love.keyboard.isDown('s') then
+        if self.state == playerStates["Running"] then
             self.state = playerStates["Crouching"]
         end
+        if self.state ~= playerStates["Jumping"] then
+            self.state = playerStates["Crouching"]
+        end
+        if self.facing == facingTable["DownLeft"] and self.state == playerStates["Crouching"] then
+            self.facing = facingTable["Left"]
+        elseif self.facing == facingTable["DownRight"] and self.state == playerStates["Crouching"] then
+            self.facing = facingTable["Right"]
+        end
+
+        if self.state == playerStates["Crouching"] then
+            self.shootingDirection = self.facing
+        else
+            self.shootingDirection = facingTable["Down"]
+        end
     else
-        moving = false
         self.shootingDirection = self.facing
         self.state = playerStates["Idle"]
         if self.facing == facingTable["UpRight"] or self.facing == facingTable["DownRight"] then
@@ -115,27 +118,24 @@ function Player:update(dt)
         self.shootTimer = self.shootTimer - dt
     end
 
-    if love.keyboard.isDown('ralt') and self.shootTimer <= 0 then
-        -- if self.facing == facingTable["Down"] and not playerStates["Jumping"] then
-        --     return
-        -- end
-        local projectile = Projectile:new(self.x, self.y, self.shootingDirection, self.state)
+    if love.keyboard.isDown('p') and self.shootTimer <= 0 then
+        local projectile = Projectile:new(self.x, self.y, self.shootingDirection, self.state, self.facing)
         table.insert(self.projectiles, projectile)
-        self.shootTimer = self.shootCooldown 
+        self.shootTimer = self.shootCooldown
     end
 
     if self.state == playerStates["Idle"] and (self.facing == facingTable["UpLeft"] or self.facing == facingTable["UpRight"]) then
-        self.offsetY = -10 
+        self.offsetY = -10
     elseif self.state == playerStates["Crouching"] then
         self.offsetY = 15
     else
-        self.offsetY = 0 
+        self.offsetY = 0
     end
 
-    if love.keyboard.isDown("space") and self.isOnGround then
+    if love.keyboard.isDown("o") and self.isOnGround then
         self:jump()
     end
-    
+
     if not self.isOnGround then
         self.verticalVelocity = self.verticalVelocity + self.gravity * dt
         self.y = self.y + self.verticalVelocity * dt
