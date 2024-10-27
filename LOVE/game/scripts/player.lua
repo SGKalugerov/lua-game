@@ -162,10 +162,6 @@ function Player:update(dt)
             self.frameIndex = (self.frameIndex % #self.currentFrames) + 1
         end
     end
-
-    -- if not moving and not playerStates["Jumping"] then
-    --     self.state = playerStates["Idle"]
-    -- end
 end
 
 function Player:draw()
