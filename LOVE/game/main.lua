@@ -1,5 +1,7 @@
 require("scripts.player")
-require("animationManager.animationManager")
+require("managers.animationManager")
+require("managers.objectManager")
+
 local player
 local background
 local animationManager
@@ -10,6 +12,8 @@ function love.load()
     background = love.graphics.newImage("assets/background.jpg")
     animationManager = AnimationManager.new()
     player = Player.new(0, 0, animationManager)
+    objectManager = ObjectManager:new()
+    objectManager:spawnEnemy()
     backgroundMusic = love.audio.newSource("assets/music/jungle.mp3", "stream")
 
     backgroundMusic:setLooping(true)
@@ -28,6 +32,7 @@ function love.update(dt)
             table.remove(player.projectiles, i)
         end
     end
+    objectManager:update(dt, player.x, player.y, player)
 end
 
 function love.draw()
@@ -36,6 +41,7 @@ function love.draw()
     for _, projectile in ipairs(player.projectiles) do
         projectile:draw()
     end
+    objectManager:draw()
 end
 
 function love.keypressed(key)

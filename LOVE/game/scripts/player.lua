@@ -24,7 +24,7 @@ function Player.new(x, y, animationManager)
     instance.projectiles = {}
     instance.shootCooldown = 1 / 5
     instance.shootTimer = 0
-
+    instance.health = 10
     instance.currentFrames = instance.animationManager:getFrames(instance.state, instance.facing) or {}
 
     if #instance.currentFrames > 0 then

@@ -2,6 +2,8 @@ Projectile = {}
 Projectile.__index = Projectile
 local facingTable = require("utils.direction")
 local playerStates = require("utils.state")
+local checkCollision = require("utils/collision")
+
 function Projectile:new(x, y, direction, state, facing)
     local instance = setmetatable({}, Projectile)
     instance.x = x
@@ -82,6 +84,18 @@ function Projectile:update(dt)
         self.x = self.x + self.speed * dt
     elseif self.ownerState == playerStates["Crouching"] and (self.direction == facingTable["DownLeft"] or self.direction == facingTable["UpLeft"] or self.direction == facingTable["Left"]) then
         self.x = self.x - self.speed * dt
+    end
+end
+
+function Projectile:checkCollisionWithEnemy(enemy)
+    local enemyWidth = 20  -- Assuming enemy width of 20 for now, adjust as needed
+    local enemyHeight = 20 -- Assuming enemy height of 20 for now
+
+    -- Check collision with enemy
+    if checkCollision(self.x, self.y, 5, 5, enemy.x, enemy.y, enemyWidth, enemyHeight) then
+        self.collided = true
+        -- You can also add code to decrease enemy health here if needed
+        print("Player projectile hit an enemy!")
     end
 end
 

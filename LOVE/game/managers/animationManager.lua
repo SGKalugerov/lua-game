@@ -2,7 +2,6 @@ AnimationManager = {}
 AnimationManager.__index = AnimationManager
 local facingTable = require("utils.direction")
 local playerStates = require("utils.state")
-local idle
 function AnimationManager.new()
     local instance = setmetatable({}, AnimationManager)
 
