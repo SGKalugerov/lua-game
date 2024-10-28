@@ -88,14 +88,11 @@ function Projectile:update(dt)
 end
 
 function Projectile:checkCollisionWithEnemy(enemy)
-    local enemyWidth = 20  -- Assuming enemy width of 20 for now, adjust as needed
-    local enemyHeight = 20 -- Assuming enemy height of 20 for now
+    local enemyWidth = 20
+    local enemyHeight = 20
 
-    -- Check collision with enemy
     if checkCollision(self.x, self.y, 5, 5, enemy.x, enemy.y, enemyWidth, enemyHeight) then
         self.collided = true
-        -- You can also add code to decrease enemy health here if needed
-        print("Player projectile hit an enemy!")
     end
 end
 

@@ -2,7 +2,7 @@ EnemyProjectile = {}
 EnemyProjectile.__index = EnemyProjectile
 local checkCollision = require("utils/collision")
 
-function EnemyProjectile:new(x, y, targetX, targetY)
+function EnemyProjectile:new(x, y, targetX, targetY, player)
     local instance = setmetatable({}, EnemyProjectile)
     instance.x = x
     instance.y = y
@@ -11,7 +11,7 @@ function EnemyProjectile:new(x, y, targetX, targetY)
     instance.targetY = targetY
 
     local dx = targetX - x
-    local dy = targetY - y
+    local dy = targetY - y + player.height / 2
     local distance = math.sqrt(dx * dx + dy * dy)
     instance.velocityX = (dx / distance) * instance.speed
     instance.velocityY = (dy / distance) * instance.speed

@@ -12,13 +12,13 @@ function love.load()
     background = love.graphics.newImage("assets/background.jpg")
     animationManager = AnimationManager.new()
     player = Player.new(0, 0, animationManager)
-    objectManager = ObjectManager:new()
+    objectManager = ObjectManager:new(player)
     objectManager:spawnEnemy()
-    backgroundMusic = love.audio.newSource("assets/music/jungle.mp3", "stream")
+    -- backgroundMusic = love.audio.newSource("assets/music/jungle.mp3", "stream")
 
-    backgroundMusic:setLooping(true)
+    -- backgroundMusic:setLooping(true)
 
-    backgroundMusic:play()
+    -- backgroundMusic:play()
 end
 
 function love.update(dt)

@@ -3,7 +3,7 @@ Enemy = {}
 Enemy.__index = Enemy
 local screenWidth = love.graphics.getWidth()
 local screenHeight = love.graphics.getHeight()
-function Enemy:new(x, y)
+function Enemy:new(x, y, targetX)
     local instance = setmetatable({}, Enemy)
     instance.x = x
     instance.y = y
@@ -15,6 +15,8 @@ function Enemy:new(x, y)
     instance.shootingCooldown = 1
     instance.shootTimer = 0
     instance.health = 3
+    instance.initialX = x
+    instance.targetInitialX = targetX
     return instance
 end
 
@@ -30,16 +32,21 @@ function Enemy:update(dt, playerX, playerY, player)
     end
 
     if self.onGround then
-        if playerX > self.x then
-            self.x = self.x + self.speed * dt
-        elseif playerX < self.x then
+        if self.initialX > self.targetInitialX then
             self.x = self.x - self.speed * dt
+        else
+            self.x = self.x + self.speed * dt
         end
+        -- if playerX > self.x then
+        --     self.x = self.x + self.speed * dt
+        -- elseif playerX < self.x then
+        --     self.x = self.x - self.speed * dt
+        -- end
     end
 
     self.shootTimer = self.shootTimer + dt
     if self.shootTimer >= self.shootingCooldown then
-        self:shootAt(playerX, playerY)
+        self:shootAt(playerX, playerY, player)
         self.shootTimer = 0
     end
 
@@ -69,12 +76,13 @@ function Enemy:update(dt, playerX, playerY, player)
     end
 end
 
-function Enemy:shootAt(targetX, targetY)
-    local projectile = EnemyProjectile:new(self.x, self.y, targetX, targetY)
+function Enemy:shootAt(targetX, targetY, player)
+    local projectile = EnemyProjectile:new(self.x, self.y, targetX, targetY, player)
     table.insert(self.projectiles, projectile)
 end
 
 function Enemy:draw()
+    love.graphics.print("HP: " .. self.health, self.x, self.y - 15)
     love.graphics.rectangle("fill", self.x, self.y, 20, 20)
 
     for _, projectile in ipairs(self.projectiles) do
