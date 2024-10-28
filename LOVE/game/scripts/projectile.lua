@@ -11,6 +11,7 @@ function Projectile:new(x, y, direction, state, facing)
     instance.direction = direction
     instance.speed = 600
     instance.ownerState = state
+    instance.travelDistance = 1200
     instance.offsetY = 0
     instance.offsetX = 0
     if state == playerStates["Crouching"] then
@@ -85,6 +86,8 @@ function Projectile:update(dt)
     elseif self.ownerState == playerStates["Crouching"] and (self.direction == facingTable["DownLeft"] or self.direction == facingTable["UpLeft"] or self.direction == facingTable["Left"]) then
         self.x = self.x - self.speed * dt
     end
+
+    self.travelDistance = self.travelDistance - self.speed * dt
 end
 
 function Projectile:checkCollisionWithEnemy(enemy)
@@ -96,7 +99,8 @@ function Projectile:checkCollisionWithEnemy(enemy)
     end
 end
 
-function Projectile:draw()
+function Projectile:draw(cameraX)
     local projectile = love.graphics.newImage("assets/projectile1.png")
-    love.graphics.draw(projectile, self.x, self.y)
+    print('projectile drawn at:' .. self.x - cameraX)
+    love.graphics.draw(projectile, self.x - cameraX, self.y)
 end

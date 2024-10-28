@@ -81,11 +81,11 @@ function Enemy:shootAt(targetX, targetY, player)
     table.insert(self.projectiles, projectile)
 end
 
-function Enemy:draw()
-    love.graphics.print("HP: " .. self.health, self.x, self.y - 15)
-    love.graphics.rectangle("fill", self.x, self.y, 20, 20)
+function Enemy:draw(cameraX)
+    love.graphics.print("HP: " .. self.health, self.x - cameraX, self.y - 15)
+    love.graphics.rectangle("fill", self.x - cameraX, self.y, 20, 20)
 
     for _, projectile in ipairs(self.projectiles) do
-        projectile:draw()
+        projectile:draw(cameraX)
     end
 end

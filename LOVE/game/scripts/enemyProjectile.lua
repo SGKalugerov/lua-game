@@ -6,10 +6,10 @@ function EnemyProjectile:new(x, y, targetX, targetY, player)
     local instance = setmetatable({}, EnemyProjectile)
     instance.x = x
     instance.y = y
-    instance.speed = 250
+    instance.speed = 180
     instance.targetX = targetX
     instance.targetY = targetY
-
+    instance.travelDistance = 300
     local dx = targetX - x
     local dy = targetY - y + player.height / 2
     local distance = math.sqrt(dx * dx + dy * dy)
@@ -33,6 +33,6 @@ function EnemyProjectile:update(dt)
     self.y = self.y + self.velocityY * dt
 end
 
-function EnemyProjectile:draw()
-    love.graphics.circle("fill", self.x, self.y, 5)
+function EnemyProjectile:draw(cameraX)
+    love.graphics.circle("fill", self.x - cameraX, self.y, 5)
 end
