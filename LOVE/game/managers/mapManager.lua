@@ -4,7 +4,6 @@ local json = require "utils.dkjson"
 MapManager.collidableTiles = {}
 
 function MapManager:loadMap(mapFile, tilesetData)
-    print(mapFile)
     local mapData = self:loadJSON(mapFile)
 
     self.tileWidth = mapData.tilewidth
@@ -50,15 +49,15 @@ function MapManager:drawMap(tileImages)
                     local tileImage = tileImages[tileID]
 
                     if tileImage then
-                        love.graphics.draw(tileImage, (x - 1) * self.tileWidth, (y - 1) * self.tileHeight)
+                        love.graphics.draw(tileImage, (x) * self.tileWidth, (y - 1) * self.tileHeight)
                     end
-
-                    if self:isCollidable(tileID - 1) then
-                        love.graphics.setColor(1, 0, 0, 0.5)
-                        love.graphics.rectangle("fill", (x - 1) * self.tileWidth, (y - 1) * self.tileHeight,
-                            self.tileWidth, self.tileHeight)
-                        love.graphics.setColor(1, 1, 1, 1)
-                    end
+                    --debug visualize collidable tiles
+                    -- if self:isCollidable(tileID ) then
+                    --     love.graphics.setColor(1, 0, 0, 0.5)
+                    --     love.graphics.rectangle("fill", (x) * self.tileWidth, (y - 1) * self.tileHeight,
+                    --         self.tileWidth, self.tileHeight)
+                    --     love.graphics.setColor(1, 1, 1, 1)
+                    -- end
                 end
             end
         end

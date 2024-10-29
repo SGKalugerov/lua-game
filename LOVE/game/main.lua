@@ -19,13 +19,13 @@ function love.load()
     player = Player.new(0, 0, animationManager)
     objectManager = ObjectManager:new(player)
     objectManager:spawnEnemy()
-    backgroundMusic = love.audio.newSource("assets/music/jungle.mp3", "stream")
+    -- backgroundMusic = love.audio.newSource("assets/music/jungle.mp3", "stream")
 
-    backgroundMusic:setLooping(true)
+    -- backgroundMusic:setLooping(true)
 
-    backgroundMusic:play()
+    -- backgroundMusic:play()
 
-    MapManager:loadMap("C:\\GIT\\lua-game\\LOVE\\game\\assets\\tiles\\putka.json", tilesetData)
+    MapManager:loadMap("C:\\GIT\\lua-game\\LOVE\\game\\assets\\tiles\\kur.json", tilesetData)
 
 
     tileImages[1] = love.graphics.newImage("assets/tiles/tile_dirt_grass.png")
@@ -45,7 +45,7 @@ function love.update(dt)
         --     table.remove(player.projectiles, i)
         -- end
     end
-    objectManager:update(dt, player.x, player.y, cameraX)
+    objectManager:update(dt, player.x, player.y, cameraX, player)
 
     -- if player.x > scrollStart then
     --     -- Calculate how much the camera should offset based on player's position
@@ -60,7 +60,6 @@ end
 
 function love.draw()
     -- love.graphics.draw(background, backgroundX, 0)
-    print(cameraX)
 
     MapManager:drawMap(tileImages)
     for _, projectile in ipairs(player.projectiles) do

@@ -4,7 +4,6 @@ local facingTable = require("utils.direction")
 local playerStates = require("utils.state")
 function AnimationManager.new()
     local instance = setmetatable({}, AnimationManager)
-
     instance.animations = {
         [facingTable["Left"]] = {
             [playerStates["Idle"]] = { "assets/idle_left1.png", "assets/idle_left2.png" },

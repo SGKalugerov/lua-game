@@ -55,7 +55,7 @@ function Enemy:update(dt, playerX, playerY, player)
         projectile:checkCollisionWithEnemy(self)
 
         if projectile.collided then
-            self.health = self.health - 1
+            self.health = self.health - projectile.damage
             table.remove(player.projectiles, i)
         end
     end

@@ -4,7 +4,7 @@ local facingTable = require("utils.direction")
 local playerStates = require("utils.state")
 local checkCollision = require("utils/collision")
 
-function Projectile:new(x, y, direction, state, facing)
+function Projectile:new(x, y, direction, state, facing, angle, damage)
     local instance = setmetatable({}, Projectile)
     instance.x = x
     instance.y = y
@@ -14,6 +14,10 @@ function Projectile:new(x, y, direction, state, facing)
     instance.travelDistance = 1200
     instance.offsetY = 0
     instance.offsetX = 0
+    instance.angle = angle
+    instance.velocityX = 0
+    instance.velocityY = 0
+    instance.damage = damage and damage or 1
     if state == playerStates["Crouching"] then
         if facing == facingTable["Left"] then
             if direction == facingTable["Left"] then
@@ -55,38 +59,37 @@ function Projectile:new(x, y, direction, state, facing)
     elseif direction == facingTable["DownRight"] then
         instance.offsetX = facing == facingTable["DownRight"] and 5 or -5
     end
+
+    local baseAngle
+    if direction == facingTable["Right"] then
+        baseAngle = 0
+    elseif direction == facingTable["UpRight"] then
+        baseAngle = -math.pi / 4
+    elseif direction == facingTable["Up"] then
+        baseAngle = -math.pi / 2
+    elseif direction == facingTable["UpLeft"] then
+        baseAngle = -3 * math.pi / 4
+    elseif direction == facingTable["Left"] then
+        baseAngle = math.pi
+    elseif direction == facingTable["DownLeft"] then
+        baseAngle = 3 * math.pi / 4
+    elseif direction == facingTable["Down"] then
+        baseAngle = math.pi / 2
+    elseif direction == facingTable["DownRight"] then
+        baseAngle = math.pi / 4
+    end
+
+    local finalAngle = baseAngle + instance.angle
+    instance.velocityX = instance.speed * math.cos(finalAngle)
+    instance.velocityY = instance.speed * math.sin(finalAngle)
     instance.x = instance.x + instance.offsetX
     instance.y = instance.y + instance.offsetY
     return instance
 end
 
 function Projectile:update(dt)
-    if self.direction == facingTable["Up"] then
-        self.y = self.y - self.speed * dt
-    elseif self.direction == facingTable["Left"] then
-        self.x = self.x - self.speed * dt
-    elseif self.direction == facingTable["UpLeft"] then
-        self.x = self.x - self.speed * dt
-        self.y = self.y - self.speed * dt
-    elseif self.direction == facingTable["DownLeft"] then
-        self.x = self.x - self.speed * dt
-        self.y = self.y + self.speed * dt
-    elseif self.direction == facingTable["Right"] then
-        self.x = self.x + self.speed * dt
-    elseif self.direction == facingTable["UpRight"] then
-        self.x = self.x + self.speed * dt
-        self.y = self.y - self.speed * dt
-    elseif self.direction == facingTable["DownRight"] then
-        self.x = self.x + self.speed * dt
-        self.y = self.y + self.speed * dt
-    elseif self.direction == facingTable["Down"] and self.ownerState == playerStates["Jumping"] then
-        self.y = self.y + self.speed * dt
-    elseif self.ownerState == playerStates["Crouching"] and (self.direction == facingTable["DownRight"] or self.direction == facingTable["UpRight"] or self.direction == facingTable["Right"]) then
-        self.x = self.x + self.speed * dt
-    elseif self.ownerState == playerStates["Crouching"] and (self.direction == facingTable["DownLeft"] or self.direction == facingTable["UpLeft"] or self.direction == facingTable["Left"]) then
-        self.x = self.x - self.speed * dt
-    end
-
+    self.x = self.x + self.velocityX * dt
+    self.y = self.y + self.velocityY * dt
     self.travelDistance = self.travelDistance - self.speed * dt
 end
 
@@ -101,6 +104,5 @@ end
 
 function Projectile:draw(cameraX)
     local projectile = love.graphics.newImage("assets/projectile1.png")
-    print('projectile drawn at:' .. self.x - cameraX)
     love.graphics.draw(projectile, self.x - cameraX, self.y)
 end
