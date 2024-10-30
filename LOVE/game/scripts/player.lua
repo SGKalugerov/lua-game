@@ -11,6 +11,7 @@ local powerups = require("scripts.powerups.powerupTypes")
 local buffs = require("scripts.enums.buffs")
 local originalSpeed = 200
 local originalDamage = 1
+local originalJumpHeight = -380
 function Player.new(x, y, animationManager)
     local instance = setmetatable({}, Player)
     instance.speed = 200
@@ -29,7 +30,9 @@ function Player.new(x, y, animationManager)
     instance.projectiles = {}
     instance.shootCooldown = 1 / 5
     instance.shootTimer = 0
+    instance.score = 0
     instance.health = 10
+    instance.maxHealth = 10
     instance.damage = 1
     instance.powerups = {}
     instance.currentFrames = instance.animationManager:getFrames(instance.state, instance.facing) or {}
@@ -133,20 +136,27 @@ function Player:checkTileCollision(x, y)
 end
 
 function Player:shoot()
-    if self.weapon == powerups.effects['Multishot'] then
+    local shootingSound
+    if self.weapon == powerups.effects['Splitshot'] then
+        shootingSound = love.audio.newSource("assets/effects/splitshot.wav", "stream")
+
         local spreadAngles = { -0.2, -0.10, 0, 0.10, 0.2 }
         for _, angle in ipairs(spreadAngles) do
-            local projectile = Projectile:new(self.x, self.y, self.shootingDirection, self.state, self.facing, angle,
+            local projectile = Projectile:new(self.x, self.y + self.height / 4, self.shootingDirection, self.state,
+                self.facing, angle,
                 self.damage)
             table.insert(self.projectiles, projectile)
         end
     else
-        local projectile = Projectile:new(self.x, self.y, self.shootingDirection, self.state, self.facing, 0, self
+        shootingSound = love.audio.newSource("assets/effects/basic.wav", "stream")
+
+        local projectile = Projectile:new(self.x, self.y + self.height / 4, self.shootingDirection, self.state,
+            self.facing, 0, self
             .damage)
         table.insert(self.projectiles, projectile)
     end
 
-
+    shootingSound:play()
     self.shootTimer = self.shootCooldown
 end
 
@@ -300,12 +310,17 @@ function Player:update(dt, cameraX)
                         self.damage = originalDamage
                         self.buffs[buffs['Damage']] = nil
                     end
+                elseif v.effect == powerups.effects['Highjump'] then
+                    if self.buffs[buffs['Highjump']] then
+                        self.jumpHeight = originalJumpHeight
+                        self.buffs[buffs['Highjump']] = nil
+                    end
                 end
 
                 table.remove(self.powerups, k)
             else
-                if v.effect == powerups.effects['Multishot'] then
-                    self.weapon = powerups.effects['Multishot']
+                if v.effect == powerups.effects['Splitshot'] then
+                    self.weapon = powerups.effects['Splitshot']
                 end
                 if v.effect == powerups.effects['Speed'] then
                     if not self.buffs[buffs['Speed']] then
@@ -317,6 +332,12 @@ function Player:update(dt, cameraX)
                     if not self.buffs[buffs['Damage']] then
                         self.damage = self.damage * v.value
                         self.buffs[buffs['Damage']] = true
+                    end
+                end
+                if v.effect == powerups.effects['Highjump'] then
+                    if not self.buffs[buffs['Highjump']] then
+                        self.jumpHeight = self.jumpHeight * v.value
+                        self.buffs[buffs['Highjump']] = true
                     end
                 end
             end
@@ -334,6 +355,21 @@ end
 
 function Player:draw(cameraX)
     local frame = self.currentFrames[self.frameIndex]
+    local barWidth = self.width
+    local barHeight = 5
+    local healthRatio = self.health / self.maxHealth
+    local barX = self.x - cameraX
+    local barY = self.y - 10
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.rectangle("line", barX, barY, barWidth, barHeight)
+
+    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.rectangle("fill", barX, barY, barWidth * healthRatio, barHeight)
+
+    love.graphics.setColor(1, 1, 1, 1)
+
+
     if frame then
         love.graphics.draw(frame, self.x - cameraX, self.y + self.offsetY)
     end

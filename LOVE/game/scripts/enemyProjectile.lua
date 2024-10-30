@@ -1,6 +1,6 @@
 EnemyProjectile = {}
 EnemyProjectile.__index = EnemyProjectile
-local checkCollision = require("utils/collision")
+local checkCollision = require("utils.collision")
 
 function EnemyProjectile:new(x, y, targetX, targetY, player)
     local instance = setmetatable({}, EnemyProjectile)

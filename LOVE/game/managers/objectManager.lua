@@ -41,7 +41,7 @@ function ObjectManager:update(dt, playerX, playerY, cameraX, player)
 
     self.powerupSpawnTimer = self.powerupSpawnTimer + dt
     if self.powerupSpawnTimer >= self.powerupSpawnInterval then
-        local powerupIndex = math.random(1, 3)
+        local powerupIndex = math.random(1, 4)
         self:spawnPowerup(cameraX, powerups.powerups[powerupIndex])
         self.powerupSpawnTimer = 0
         self.powerupSpawnInterval = math.random(1, 3)
@@ -66,6 +66,7 @@ function ObjectManager:update(dt, playerX, playerY, cameraX, player)
         enemy:update(dt, playerX, playerY, self.player)
         if enemy.health <= 0 then
             table.remove(self.enemies, _)
+            player.score = player.score + enemy.pointsAward
         end
         for i = #enemy.projectiles, 1, -1 do
             local projectile = enemy.projectiles[i]

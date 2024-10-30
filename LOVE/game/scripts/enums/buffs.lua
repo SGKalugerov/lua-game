@@ -1,6 +1,7 @@
 local buffs = {
-    ['Speed'] = 1,
     ['Damage'] = 2,
+    ['Speed'] = 3,
+    ['Highjump'] = 4
 }
 
 return buffs

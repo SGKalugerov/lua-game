@@ -1,7 +1,8 @@
 local effects = {
-    ["Multishot"] = 1,
-    ["Speed"] = 2,
-    ["Damage"] = 3
+    ["Splitshot"] = 1,
+    ["Damage"] = 2,
+    ["Speed"] = 3,
+    ["Highjump"] = 4,
 }
 local category = {
     ["Buff"] = 1,
@@ -9,9 +10,10 @@ local category = {
 }
 local powerups = {
     [1] = {
-        effect = effects['Multishot'],
+        effect = effects['Splitshot'],
         duration = 99999,
-        category = category['Weapon']
+        category = category['Weapon'],
+        spritePath = 'assets/weapons/splitshot.png'
     },
     [2] = {
         effect = effects['Damage'],
@@ -21,14 +23,15 @@ local powerups = {
     },
     [3] = {
         effect = effects['Speed'],
-        duration = 60,
+        duration = 30,
         category = category['Buff'],
         value = 1.4
     },
     [4] = {
-        effect = effects['Laser'],
-        duration = 99999,
-        category = category['Weapon']
+        effect = effects['Highjump'],
+        duration = 30,
+        category = category['Buff'],
+        value = 1.4
     },
     [5] = {
         effect = effects['Flamethrower'],

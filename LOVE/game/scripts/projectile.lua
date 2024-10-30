@@ -2,7 +2,7 @@ Projectile = {}
 Projectile.__index = Projectile
 local facingTable = require("utils.direction")
 local playerStates = require("utils.state")
-local checkCollision = require("utils/collision")
+local checkCollision = require("utils.collision")
 
 function Projectile:new(x, y, direction, state, facing, angle, damage)
     local instance = setmetatable({}, Projectile)
