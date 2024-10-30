@@ -5,27 +5,26 @@ require("scripts.menu")
 local player
 local animationManager
 local screenWidth = love.graphics.getWidth()
+local screenHeight = love.graphics.getHeight()
 scrollStart = screenWidth - screenWidth / 2
 local MapManager = require('managers.mapManager')
 local tilesetData = require('utils.tilesetData')
-local screenHeight = love.graphics.getHeight()
-local backgroundMusic
-local cameraX = 0
-local backgroundX = 0
+local cameraX, backgroundX = 0, 0
 local tileImages = {}
 local menu
 local buffs = require("scripts.enums.buffs")
 local weapons = require("scripts.enums.weapons")
-local hasMenuSongPlayed = false
-local hasBackgroundMusicPlayed = false
--- local Menu = require("scripts.menu")
--- local buffs = require("scripts.enums.buffs")
+local hasMenuSongPlayed, hasBackgroundMusicPlayed = false, false
+
 local menuSong = love.audio.newSource("assets/effects/menu.mp3", "stream")
 local backgroundMusic = love.audio.newSource("assets/music/jungle.mp3", "stream")
+backgroundMusic:setLooping(true)
 
 local powerups = require("scripts.powerups.powerupTypes")
+
 function love.load()
-    -- _G.background = love.graphics.newImage("assets/level1.png")
+    math.randomseed(os.time())
+    math.random(); math.random(); math.random()
     animationManager = AnimationManager.new()
     player = Player.new(0, 0, animationManager)
     objectManager = ObjectManager:new(player)
@@ -33,8 +32,7 @@ function love.load()
 
     _G.font = love.graphics.newFont("assets/fonts/exocet.ttf", 36)
     menu = Menu.new("Menu")
-    MapManager:loadMap("C:\\GIT\\lua-game\\LOVE\\game\\assets\\tiles\\kur.json", tilesetData)
-
+    MapManager:loadMap("assets/tiles/kur.json", tilesetData)
 
     tileImages[1] = love.graphics.newImage("assets/tiles/tile_dirt_grass.png")
     tileImages[18] = love.graphics.newImage("assets/tiles/tile_dirt.png")
@@ -48,6 +46,15 @@ local function getKeyByValue(tbl, value)
     end
     return nil
 end
+
+local function playBackgroundMusic()
+    menuSong:stop()
+    if not hasBackgroundMusicPlayed then
+        backgroundMusic:play()
+        hasBackgroundMusicPlayed = true
+    end
+end
+
 function love.update(dt)
     if menu.gameState == "Menu" then
         if not hasMenuSongPlayed then
@@ -57,13 +64,9 @@ function love.update(dt)
         menu:update(dt)
         return
     else
-        menuSong:stop()
-        if not hasBackgroundMusicPlayed then
-            backgroundMusic:setLooping(true)
-            backgroundMusic:play()
-            hasBackgroundMusicPlayed = true
-        end
+        playBackgroundMusic()
     end
+
     player:update(dt, cameraX)
 
     for i = #player.projectiles, 1, -1 do
@@ -81,31 +84,23 @@ function love.draw()
         menu:draw()
     else
         MapManager:drawMap(tileImages)
-        for _, projectile in ipairs(player.projectiles) do
-            projectile:draw(cameraX)
-        end
-        objectManager:draw(cameraX)
         player:draw(cameraX)
-        local playerBuffs = ""
-        local firstBuff = true
+        objectManager:draw(cameraX)
 
+        local playerBuffs, firstBuff = "", true
         for _, buff in pairs(player.buffs) do
             if buff ~= nil then
-                local buffName = getKeyByValue(buffs, _) and getKeyByValue(powerups.effects, _)
-
+                local buffName = getKeyByValue(buffs, _) or getKeyByValue(powerups.effects, _)
                 if buffName then
-                    if not firstBuff then
-                        playerBuffs = playerBuffs .. ", "
-                    end
-
+                    if not firstBuff then playerBuffs = playerBuffs .. ", " end
                     playerBuffs = playerBuffs .. buffName
                     firstBuff = false
                 end
             end
         end
+
         love.graphics.print("Score: " .. player.score, 0, 0)
         love.graphics.print("Weapon: " .. getKeyByValue(weapons, player.weapon), 0, 30)
-
         if playerBuffs ~= '' then
             love.graphics.print("Buffs: " .. playerBuffs, 0, 60)
         end

@@ -5,26 +5,20 @@ MapManager.collidableTiles = {}
 
 function MapManager:loadMap(mapFile, tilesetData)
     local mapData = self:loadJSON(mapFile)
-
     self.tileWidth = mapData.tilewidth
     self.tileHeight = mapData.tileheight
     self.mapWidth = mapData.width
     self.mapHeight = mapData.height
     self.layers = mapData.layers
-
     self:processTileset(tilesetData)
 end
 
 function MapManager:loadJSON(filename)
-    local file = io.open(filename, "r")
-    if not file then error("Could not open file " .. filename) end
-    local content = file:read("*a")
-    file:close()
+    local content, size = love.filesystem.read(filename)
+    if not content then error("Could not open file " .. filename) end
 
     local decoded, pos, err = json.decode(content, 1, nil)
-    if err then
-        error("Error parsing JSON: " .. err)
-    end
+    if err then error("Error parsing JSON: " .. err) end
     return decoded
 end
 
@@ -47,17 +41,9 @@ function MapManager:drawMap(tileImages)
                 for x = 1, self.mapWidth do
                     local tileID = layer.data[(y - 1) * self.mapWidth + x]
                     local tileImage = tileImages[tileID]
-
                     if tileImage then
-                        love.graphics.draw(tileImage, (x) * self.tileWidth, (y - 1) * self.tileHeight)
+                        love.graphics.draw(tileImage, (x - 1) * self.tileWidth, (y - 1) * self.tileHeight)
                     end
-                    --debug visualize collidable tiles
-                    -- if self:isCollidable(tileID ) then
-                    --     love.graphics.setColor(1, 0, 0, 0.5)
-                    --     love.graphics.rectangle("fill", (x) * self.tileWidth, (y - 1) * self.tileHeight,
-                    --         self.tileWidth, self.tileHeight)
-                    --     love.graphics.setColor(1, 1, 1, 1)
-                    -- end
                 end
             end
         end

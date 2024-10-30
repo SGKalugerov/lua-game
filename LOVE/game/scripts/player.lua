@@ -373,6 +373,10 @@ function Player:draw(cameraX)
     if frame then
         love.graphics.draw(frame, self.x - cameraX, self.y + self.offsetY)
     end
+
+    for _, projectile in ipairs(self.projectiles) do
+        projectile:draw(cameraX)
+    end
 end
 
 return Player
