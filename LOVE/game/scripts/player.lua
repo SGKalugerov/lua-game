@@ -35,9 +35,9 @@ function Player.new(x, y, animationManager)
     instance.maxHealth = 10
     instance.damage = 1
     instance.powerups = {}
-    instance.currentFrames = instance.animationManager:getFrames(instance.state, instance.facing) or {}
+    instance.currentFrames = instance.animationManager:getFrames("player", instance.state, instance.facing) or {}
     instance.buffs = {}
-
+    instance.lives = 3
     instance.weapon = 0
     if #instance.currentFrames > 0 then
         instance.width = instance.currentFrames[1]:getWidth()
@@ -304,7 +304,7 @@ function Player:update(dt, cameraX)
             self.state = playerStates["Jumping"]
         end
     end
-    newFrames = self.animationManager:getFrames(self.state, self.facing) or {}
+    newFrames = self.animationManager:getFrames("player", self.state, self.facing) or {}
     if newFrames ~= self.currentFrames then
         self.currentFrames = newFrames
         self.frameIndex = 1

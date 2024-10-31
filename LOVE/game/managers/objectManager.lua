@@ -5,12 +5,13 @@ ObjectManager.__index = ObjectManager
 local screenWidth = love.graphics.getWidth()
 local screenHeight = love.graphics.getHeight()
 local powerups = require("scripts.powerups.powerupTypes")
-function ObjectManager:new(player)
+function ObjectManager:new(player, animationManager)
     local instance = setmetatable({}, ObjectManager)
     instance.player = player
     instance.enemies = {}
     instance.powerups = {}
     instance.spawnTimer = 0
+    instance.animationManager = animationManager
     instance.powerupSpawnTimer = 0
     instance.spawnInterval = math.random(5, 10)
     instance.powerupSpawnInterval = math.random(1, 3)
@@ -28,7 +29,7 @@ function ObjectManager:spawnEnemy(cameraX)
     cameraX = cameraX and cameraX or 0
     local x = math.random(cameraX, cameraX + love.graphics.getWidth())
     local y = math.random(0, 150)
-    table.insert(self.enemies, Enemy:new(x, y, self.player.x))
+    table.insert(self.enemies, Enemy:new(x, y, self.player.x, self.animationManager))
 end
 
 function ObjectManager:update(dt, playerX, playerY, cameraX, player)

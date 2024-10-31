@@ -1,9 +1,9 @@
-Menu = {}
-Menu.__index = Menu
+GameOver = {}
+GameOver.__index = GameOver
 local screenWidth = love.graphics.getWidth()
 local screenHeight = love.graphics.getHeight()
-function Menu.new(gameState)
-    local instance = setmetatable({}, Menu)
+function GameOver.new(gameState)
+    local instance = setmetatable({}, GameOver)
     instance.gameState = gameState
     instance.pressToStartTimeout = 0.6
     instance.pressToStartTimer = 0
@@ -11,7 +11,7 @@ function Menu.new(gameState)
     return instance
 end
 
-function Menu:update(dt)
+function GameOver:update(dt)
     self.pressToStartTimer = self.pressToStartTimer + dt
     if self.pressToStartTimer > self.pressToStartTimeout then
         self.pressToStartTimer = 0
@@ -22,7 +22,7 @@ function Menu:update(dt)
     end
 end
 
-function Menu:draw()
+function GameOver:draw()
     local menu = love.graphics.newImage("assets/menu/menu.jpg")
     love.graphics.draw(menu, 100, 0)
     love.graphics.setFont(fontBig)

@@ -19,7 +19,7 @@ local hasMenuSongPlayed, hasBackgroundMusicPlayed = false, false
 local menuSong = love.audio.newSource("assets/effects/menu.mp3", "stream")
 local backgroundMusic = love.audio.newSource("assets/music/jungle.mp3", "stream")
 backgroundMusic:setLooping(true)
-
+local lifeSprite
 local powerups = require("scripts.powerups.powerupTypes")
 
 function love.load()
@@ -27,12 +27,16 @@ function love.load()
     math.random(); math.random(); math.random()
     animationManager = AnimationManager.new()
     player = Player.new(0, 0, animationManager)
-    objectManager = ObjectManager:new(player)
+    objectManager = ObjectManager:new(player, animationManager)
     objectManager:spawnEnemy()
 
-    _G.font = love.graphics.newFont("assets/fonts/exocet.ttf", 36)
+    _G.fontBig = love.graphics.newFont("assets/fonts/exocet.ttf", 36)
+    _G.fontMedium = love.graphics.newFont("assets/fonts/exocet.ttf", 28)
+    _G.fontSmall = love.graphics.newFont("assets/fonts/exocet.ttf", 20)
+
     menu = Menu.new("Menu")
     MapManager:loadMap("assets/tiles/kur.json", tilesetData)
+    lifeSprite = love.graphics.newImage("assets/life.png")
 
     tileImages[1] = love.graphics.newImage("assets/tiles/tile_dirt_grass.png")
     tileImages[18] = love.graphics.newImage("assets/tiles/tile_dirt.png")
@@ -58,13 +62,13 @@ end
 function love.update(dt)
     if menu.gameState == "Menu" then
         if not hasMenuSongPlayed then
-            menuSong:play()
+            -- menuSong:play()
             hasMenuSongPlayed = true
         end
         menu:update(dt)
         return
     else
-        playBackgroundMusic()
+        -- playBackgroundMusic()
     end
 
     player:update(dt, cameraX)
@@ -83,6 +87,8 @@ function love.draw()
     if menu.gameState == "Menu" then
         menu:draw()
     else
+        love.graphics.setFont(fontMedium)
+
         MapManager:drawMap(tileImages)
         player:draw(cameraX)
         objectManager:draw(cameraX)
@@ -103,6 +109,10 @@ function love.draw()
         love.graphics.print("Weapon: " .. getKeyByValue(weapons, player.weapon), 0, 30)
         if playerBuffs ~= '' then
             love.graphics.print("Buffs: " .. playerBuffs, 0, 60)
+        end
+
+        for i = player.lives, 1, -1 do
+            love.graphics.draw(lifeSprite, 1 + 20 * i, 80, 0, 2, 2)
         end
     end
 end
