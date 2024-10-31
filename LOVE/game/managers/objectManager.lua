@@ -41,7 +41,7 @@ function ObjectManager:update(dt, playerX, playerY, cameraX, player)
 
     self.powerupSpawnTimer = self.powerupSpawnTimer + dt
     if self.powerupSpawnTimer >= self.powerupSpawnInterval then
-        local powerupIndex = math.random(1, 4)
+        local powerupIndex = math.random(1, 5)
         self:spawnPowerup(cameraX, powerups.powerups[powerupIndex])
         self.powerupSpawnTimer = 0
         self.powerupSpawnInterval = math.random(1, 3)

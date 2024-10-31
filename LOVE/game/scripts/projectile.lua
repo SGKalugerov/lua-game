@@ -4,7 +4,7 @@ local facingTable = require("utils.direction")
 local playerStates = require("utils.state")
 local checkCollision = require("utils.collision")
 
-function Projectile:new(x, y, direction, state, facing, angle, damage)
+function Projectile:new(x, y, direction, state, facing, angle, damage, sprite, spriteRotation)
     local instance = setmetatable({}, Projectile)
     instance.x = x
     instance.y = y
@@ -17,6 +17,8 @@ function Projectile:new(x, y, direction, state, facing, angle, damage)
     instance.angle = angle
     instance.velocityX = 0
     instance.velocityY = 0
+    instance.sprite = sprite
+    instance.spriteRotation = spriteRotation or 0
     instance.damage = damage and damage or 1
     if state == playerStates["Crouching"] then
         if facing == facingTable["Left"] then
@@ -103,6 +105,11 @@ function Projectile:checkCollisionWithEnemy(enemy)
 end
 
 function Projectile:draw(cameraX)
-    local projectile = love.graphics.newImage("assets/projectile1.png")
-    love.graphics.draw(projectile, self.x - cameraX, self.y)
+    local projectile
+    if self.sprite ~= nil then
+        projectile = love.graphics.newImage(self.sprite)
+    else
+        projectile = love.graphics.newImage("assets/weapons/projectile.png")
+    end
+    love.graphics.draw(projectile, self.x - cameraX, self.y, self.spriteRotation)
 end

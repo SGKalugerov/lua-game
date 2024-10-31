@@ -147,6 +147,31 @@ function Player:shoot()
                 self.damage)
             table.insert(self.projectiles, projectile)
         end
+    elseif self.weapon == powerups.effects['Laser'] then
+        shootingSound = love.audio.newSource("assets/effects/laser.wav", "stream")
+
+        local directions = {
+            [facingTable.Up] = { dx = 0, dy = -1, angle = -math.pi / 2 },
+            [facingTable.Down] = { dx = 0, dy = 1, angle = math.pi / 2 },
+            [facingTable.Left] = { dx = -1, dy = 0, angle = math.pi },
+            [facingTable.Right] = { dx = 1, dy = 0, angle = 0 },
+            [facingTable.UpRight] = { dx = 1, dy = -1, angle = -math.pi / 4 },
+            [facingTable.UpLeft] = { dx = -1, dy = -1, angle = -3 * math.pi / 4 },
+            [facingTable.DownRight] = { dx = 1, dy = 1, angle = math.pi / 4 },
+            [facingTable.DownLeft] = { dx = -1, dy = 1, angle = 3 * math.pi / 4 }
+        }
+
+
+        local offset = directions[self.shootingDirection] or { dx = 0, dy = 0 }
+
+        for i = 0, 3 do
+            local offsetX = i * offset.dx * 16
+            local offsetY = i * offset.dy * 16
+            local projectile = Projectile:new(self.x + offsetX, self.y + self.height / 4 + offsetY,
+                self.shootingDirection, self.state, self.facing, 0, self.damage, 'assets/weapons/laser.png', offset
+                .angle)
+            table.insert(self.projectiles, projectile)
+        end
     else
         shootingSound = love.audio.newSource("assets/effects/basic.wav", "stream")
 
@@ -321,6 +346,11 @@ function Player:update(dt, cameraX)
             else
                 if v.effect == powerups.effects['Splitshot'] then
                     self.weapon = powerups.effects['Splitshot']
+                    self.shootCooldown = v.rateOfFire
+                end
+                if v.effect == powerups.effects['Laser'] then
+                    self.weapon = powerups.effects['Laser']
+                    self.shootCooldown = v.rateOfFire
                 end
                 if v.effect == powerups.effects['Speed'] then
                     if not self.buffs[buffs['Speed']] then

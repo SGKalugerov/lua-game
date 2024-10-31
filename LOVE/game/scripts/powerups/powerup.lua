@@ -19,6 +19,7 @@ function Powerup:new(x, y, type)
     instance.duration = type.duration
     instance.category = type.category
     instance.value = type.value
+    instance.rateOfFire = type.rateOfFire or 0
     instance.sprite = nil
     instance.onGround = false
     instance.initialX = x

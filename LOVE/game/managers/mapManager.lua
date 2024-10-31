@@ -42,7 +42,7 @@ function MapManager:drawMap(tileImages)
                     local tileID = layer.data[(y - 1) * self.mapWidth + x]
                     local tileImage = tileImages[tileID]
                     if tileImage then
-                        love.graphics.draw(tileImage, (x - 1) * self.tileWidth, (y - 1) * self.tileHeight)
+                        love.graphics.draw(tileImage, (x) * self.tileWidth, (y - 1) * self.tileHeight)
                     end
                 end
             end
